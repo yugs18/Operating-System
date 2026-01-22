@@ -250,9 +250,9 @@ Micro-Instructions:
   - **Multiprogramming support**
 
 ## Address Translation Diagram
-
+```
   Process --Logical Address--> CPU --> Memory Management Unit(MMU)(Address Translation) --Physical Address--> Main Memory(RAM)
-
+```
 - Address translation allows each process to believe it has its own private memory space.
 
 
