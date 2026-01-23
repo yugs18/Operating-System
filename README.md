@@ -426,3 +426,213 @@ Micro-Instructions:
 
 ---
 
+## CPU Scheduling
+
+- Deals with the **design and implementation of the Short-Term Scheduler (STS)**
+
+---
+
+## Ready Queue to CPU Flow
+
+```text
+Ready Queue | P₁ | P₂ | ... | Pₙ | → Short-Term Scheduler → CPU
+```
+
+- Short-Term Scheduler uses CPU scheduling criteria
+- These criteria define the CPU scheduling technique
+
+---
+
+## Short-Term Scheduling
+- **Function**
+  - Selects a process from the **Ready Queue** to execute on the CPU
+- **Goals**
+  - Maximize:
+    - CPU utilization
+    - Throughput
+    - Efficiency
+  - Minimize:
+    - Waiting time
+    - Turnaround time
+    - Response time
+
+---
+
+## Process Times / Scheduling Metrics
+
+- **Arrival Time (AT)**
+  - Time when a process enters the ready queue for the first time
+
+- **Burst Time (BT)**
+  - Time spent by the process executing on the CPU
+
+- **I/O Burst Time (IOBT)**
+  - Time spent by the process waiting for I/O in blocked state
+
+- **Start Time (ST)**
+  - Time when the process gets CPU for the first time
+
+- **Completion Time (CT)**
+  - Time when the process finishes execution
+
+- **Turnaround Time (TAT)**
+  - `TAT = CT − AT`
+  - Total time spent by the process in the system
+
+- **Waiting Time (WT)**
+  - `WT = TAT − BT`
+  - Time spent waiting in the ready queue
+
+- **Response Time (RT)**
+  - `RT = ST − AT`
+  - Time from arrival to first CPU allocation
+
+---
+
+## Schedule Length
+
+- **Schedule Length (L / Makespan)**
+  - Total time taken to complete all `n` processes
+  - `L = CT of last process − AT of first process`
+
+- **Number of possible schedules**
+  - Non-preemptive scheduling → at most `n!`
+  - Preemptive scheduling → theoretically infinite
+
+---
+
+## Dispatch Latency
+
+- **Dispatch Latency**
+  - Time taken by the dispatcher to:
+    - Select the next process
+    - Perform context switching
+  - Includes **scheduling overhead**
+  - Lower dispatch latency ⇒ better responsiveness
+
+---
+
+## Process Types
+
+- **CPU-bound Process**
+  - Long CPU bursts
+  - Very little I/O
+
+- **I/O-bound Process**
+  - Frequent I/O operations
+  - Short CPU bursts
+
+---
+
+## Scheduling Categories
+
+- **Non-preemptive Scheduling**
+  - Once a process starts execution, it cannot be forcibly removed
+  - Process releases CPU voluntarily (completion, I/O, system call)
+
+- **Preemptive Scheduling**
+  - OS can forcibly remove a running process
+  - Based on:
+    - Time slicing
+    - Priority
+
+---
+
+## CPU Scheduling Algorithms
+
+- **FCFS (First Come First Serve)**
+  - Non-preemptive
+  - Simple
+  - Suffers from convoy effect
+
+- **SJF (Shortest Job First)**
+  - Non-preemptive
+  - Minimizes average waiting time
+  - Can cause starvation
+
+- **SRTF (Shortest Remaining Time First)**
+  - Preemptive version of SJF
+  - Preempts running process if a shorter job arrives
+
+- **HRRN (Highest Response Ratio Next)**
+  - Non-preemptive
+  - Prevents starvation
+  - Favors short jobs while considering waiting time
+
+- **Priority Scheduling**
+  - Can be preemptive or non-preemptive
+  - Higher priority processes execute first
+  - Starvation possible (solved using aging)
+
+- **Round Robin (RR)**
+  - Preemptive
+  - Uses time quantum
+  - Fair for interactive systems
+
+- **Multilevel Queue Scheduling**
+  - Multiple ready queues
+  - Each queue has its own scheduling policy
+
+- **Multilevel Feedback Queue (MLFQ)**
+  - Dynamic priority adjustment
+  - Adapts based on process behavior
+
+---
+
+## Starvation and Aging
+
+- **Starvation**
+  - A process waits indefinitely due to low priority
+
+- **Aging**
+  - Gradually increases priority of waiting processes
+  - Prevents starvation
+
+---
+
+## CPU Burst Prediction
+
+- Used in SJF and SRTF
+- Based on past CPU burst behavior
+- Helps estimate future burst times
+- Typically implemented using exponential averaging
+
+---
+
+## Gantt Chart Example
+```
+Time: 0 3 6 10
+| P1 | P2 | P3 |
+```
+
+- Used to visualize scheduling
+- Helps compute:
+  - Waiting time
+  - Turnaround time
+  - Response time
+
+---
+
+## Practical Usage
+
+- **Interactive systems**
+  - Round Robin (small time quantum)
+
+- **Batch systems**
+  - SJF (if burst prediction is available)
+
+- **General-purpose OS**
+  - Multilevel Feedback Queue
+  - (Linux uses Completely Fair Scheduler – CFS)
+
+---
+
+## Key Takeaways
+
+- CPU scheduling is central to OS performance
+- Trade-off exists between fairness and efficiency
+- Preemptive scheduling improves responsiveness
+- Scheduling decisions directly impact user experience
+
+---
+
