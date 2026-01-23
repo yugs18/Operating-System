@@ -636,3 +636,188 @@ Time: 0 3 6 10
 
 ---
 
+## Inter-Process Communication (IPC) & Process Synchronization
+
+- **Processes**
+  - Are independent by nature
+  - May need to **communicate and coordinate** with each other
+
+---
+
+## Why Synchronization is Required
+
+- Lack of synchronization in an IPC environment can lead to:
+  - **Inconsistency / incorrect results**
+  - **Data loss**
+  - **Deadlock** (system lock-up)
+
+---
+
+## Types of Process Interaction
+
+- **Competitive Interaction**
+  - Processes compete for access to **shared resources**
+  - Examples:
+    - Shared variables
+    - Shared files
+    - Shared memory
+  - Lack of synchronization leads to:
+    - Race conditions
+    - Incorrect results
+
+- **Cooperative Interaction**
+  - Execution of one process **affects or depends on another**
+  - Processes work together toward a common goal
+  - Lack of synchronization can cause:
+    - Inconsistency
+    - Data loss
+    - Deadlock
+
+---
+
+- Process synchronization ensures correct execution order when multiple processes access shared resources.
+
+---
+
+## Process Synchronization Mechanisms
+
+### 1. Busy Waiting
+- Process repeatedly checks for resource availability
+- CPU keeps spinning (wastes CPU cycles)
+- Example:
+  - **Spinlock**
+
+---
+
+### 2. Non–Busy Waiting (Blocking)
+- Process is blocked when resource is unavailable
+- CPU is freed for other processes
+- More efficient than busy waiting
+
+---
+
+## Categories of Synchronization Solutions
+
+### A. Software-Based Synchronization (User Mode)
+
+- Implemented purely using **software logic**
+- Does **not require special hardware support**
+- Runs in **user mode**
+- Uses shared variables and strict ordering rules
+
+#### Core Idea
+- Processes coordinate by **checking and updating shared variables**
+- Goal is to enforce **mutual exclusion** without hardware help
+
+#### Examples
+
+- **Lock Variables**
+  - A shared variable indicates whether the critical section is free
+  - Process checks the variable before entering
+  - ❌ Not atomic → race conditions possible
+
+- **Strict Alternation**
+  - Processes take turns entering the critical section
+  - ❌ Forces alternation even when not required
+  - ❌ Violates progress condition
+
+- **Peterson’s Solution**
+  - Uses:
+    - Turn variable
+    - Interest flags
+  - ✔ Correct for **two processes**
+  - ❌ Not scalable
+  - ❌ Rarely used in real systems
+
+- **Dekker’s Algorithm**
+  - One of the earliest correct solutions
+  - Combines strict alternation with flags
+  - ❌ Complex
+  - ❌ Historical importance only
+
+#### Summary
+- ✔ No hardware required
+- ❌ Inefficient
+- ❌ Not scalable
+- ❌ Mostly theoretical
+
+---
+
+### B. Hardware-Based Synchronization
+
+- Uses **special atomic CPU instructions**
+- Operations execute **indivisibly**
+- Cannot be interrupted mid-operation
+
+#### Core Idea
+- Hardware guarantees that certain instructions execute **atomically**
+- Prevents race conditions at the lowest level
+
+#### Examples
+
+- **Test-and-Set Lock (TSL)**
+  - Reads and sets a value in a single atomic step
+  - Used to implement **spinlocks**
+  - ✔ Simple
+  - ❌ Busy waiting
+  - ❌ CPU cycles wasted
+
+- **Swap Instruction**
+  - Atomically swaps values between memory and register
+  - Used for low-level locking mechanisms
+
+- **Compare-and-Swap (CAS)**
+  - Updates a value only if it matches an expected value
+  - Foundation of **lock-free programming**
+  - ✔ Powerful
+  - ❌ Complex
+  - ❌ May still involve spinning
+
+#### Summary
+- ✔ Fast
+- ✔ Atomic
+- ❌ Busy waiting
+- ❌ CPU inefficiency under contention
+
+---
+
+### C. OS-Based Synchronization (Kernel Support)
+
+- Provided directly by the **operating system**
+- Processes **block instead of spinning**
+- Implemented using kernel mechanisms
+
+#### Core Idea
+- If a process cannot enter the critical section, it is **put to sleep**
+- CPU is freed for other processes
+
+#### Examples
+
+- **Sleep and Wakeup**
+  - Process sleeps when resource is unavailable
+  - Woken up when resource becomes available
+  - ❌ Risk of missed wakeups if not handled carefully
+
+- **Semaphores**
+  - Integer-based synchronization tool
+  - Two atomic operations:
+    - `wait (P)`
+    - `signal (V)`
+  - Used for:
+    - Mutual exclusion
+    - Resource counting
+    - Process coordination
+
+- **Monitors**
+  - High-level synchronization construct
+  - Automatically enforces mutual exclusion
+  - Uses condition variables for coordination
+  - ✔ Cleaner and safer than semaphores
+
+#### Summary
+- ✔ No busy waiting
+- ✔ Efficient CPU usage
+- ✔ Scalable
+- ✔ Used in real operating systems
+
+---
