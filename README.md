@@ -258,3 +258,171 @@ Micro-Instructions:
 
 ---
 
+## Process Management
+
+- **Program**
+  - A program is a **passive entity**
+  - Stored on disk (e.g., `.exe` file)
+  - Consists of:
+    - **Data** – operands, variables
+    - **Instructions** – load, add, store, etc.
+
+- **Process**
+  - A process is an **active entity**
+  - Created when a program is **loaded from disk into main memory**
+  - A program **in execution**
+
+---
+
+## Data Types in a Process
+
+- **Static Data**
+  - Fixed size
+  - Known at compile time
+
+- **Dynamic Data**
+  - Memory allocated at runtime
+  - Size can change during execution
+
+---
+
+## Process as an Abstract Data Type (ADT)
+
+- A process can be viewed as an **Abstract Data Type**
+- An ADT consists of:
+  - **Definition**
+  - **Representation / Implementation**
+  - **Operations**
+  - **Attributes**
+
+---
+
+## Process Operations
+
+- **Create()**
+  - Allocation of required resources
+- **Schedule()**
+  - Selection of a process to run on the CPU
+- **Execute() / Run()**
+  - Execution of instructions from the code section
+- **Block() / Wait()**
+  - Process blocks due to:
+    - System call
+    - I/O operation
+- **Suspend()**
+  - Process moved from main memory to disk
+- **Resume()**
+  - Process moved from disk back to main memory
+- **Terminate()**
+  - Deallocation of all allocated resources
+
+---
+
+## Process Attributes
+
+- **Identification**
+  - Process ID (PID)
+  - Parent Process ID (PPID)
+  - Group ID (GID)
+
+- **CPU Related**
+  - Program Counter (PC)
+  - Priority
+  - Process state
+  - CPU burst time
+
+- **Memory Related**
+  - Memory size
+  - Address limits
+
+- **File Related**
+  - List of files currently in use
+
+- **Device Related**
+  - Allocated I/O devices
+
+---
+
+- All process attributes are stored in the  
+  **PCB (Process Control Block)**
+
+---
+
+## Process States and State Transitions
+
+- A process moves through different states during its lifetime:
+
+  - **New**
+    - Process is created
+    - Required resources are allocated
+
+  - **Ready**
+    - Process is ready to run
+    - Waiting in the ready queue for CPU allocation
+
+  - **Running**
+    - Process is executing instructions on the CPU
+
+  - **Blocked / Waiting**
+    - Process is waiting for:
+      - I/O operation
+      - Completion of a system call
+
+  - **Terminated**
+    - Process has completed execution
+    - Resources are released
+
+---
+
+## Queues in Process Management
+
+- OS maintains multiple queues
+- Queues generally follow **FIFO** order
+
+### On-Memory Queues
+
+- **Ready Queue**
+  - Contains PCBs of processes that are ready to execute
+
+- **Blocked / Device Queue**
+  - Contains PCBs of blocked processes
+  - Each I/O device has its **own device queue**
+
+### On-Disk Queues
+
+- **Job Queue**
+  - Contains programs waiting to be loaded into main memory
+
+- **Suspend Queue**
+  - Contains processes that are suspended from memory to disk
+
+---
+
+## Schedulers
+
+- **Long-Term Scheduler**
+  - Moves process from **New → Ready**
+  - Controls degree of multiprogramming
+
+- **Short-Term Scheduler (CPU Scheduler)**
+  - Selects process from **Ready → Running**
+  - Executes frequently
+
+- **Medium-Term Scheduler**
+  - Handles **process suspension and resumption**
+  - Swaps processes between memory and disk
+
+---
+
+## Dispatcher
+
+- Responsible for performing **context switching**
+- Activities include:
+  - Saving the state of the currently running process
+  - Loading the state of the next selected process
+  - Switching CPU control to the new process
+
+- Context switching introduces overhead but enables multitasking.
+
+---
+
