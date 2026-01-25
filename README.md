@@ -821,3 +821,143 @@ Time: 0 3 6 10
 - ✔ Used in real operating systems
 
 ---
+
+# Pre-Deadlock Concepts
+
+This section consolidates all concepts required to clearly understand
+**Deadlocks**, **Synchronization**, and **Resource Management** in Operating Systems.
+
+---
+
+## 1. Program Execution Models
+
+### Sequential Programs
+- Single flow of execution
+- Instructions execute one after another
+- No overlap in execution
+- No race conditions
+- No deadlocks
+- Poor resource utilization
+
+---
+
+### Concurrent Programs
+- Multiple processes or threads are **in progress at the same time**
+- Execution may be **interleaved**
+- Supported even on a single CPU via context switching
+- Requires synchronization
+- Can lead to:
+  - Race conditions
+  - Deadlocks
+  - Starvation
+
+> Concurrency is a **logical property**.
+
+---
+
+### Parallel Programs
+- Multiple processes or threads execute **simultaneously**
+- Requires multiple CPU cores or processors
+- Improves performance
+- Still requires synchronization
+- Deadlocks can still occur
+
+> Parallelism is a **hardware property**.
+
+---
+
+### Key Notes
+- A program can be concurrent but not parallel
+- A program can be parallel and concurrent
+- **Deadlocks arise due to concurrency, not parallelism**
+
+---
+
+## 2. Process vs Thread (Awareness Level)
+
+- **Process**
+  - Independent execution unit
+  - Own address space
+
+- **Thread**
+  - Lightweight execution unit
+  - Shares address space with other threads of the same process
+
+> Deadlocks occur more frequently with threads due to shared memory.
+
+---
+
+## 3. Resources in Operating Systems
+
+- A **resource** is any entity required by a process to execute.
+
+### Types of Resources
+- **Reusable Resources**
+  - CPU
+  - Memory
+  - Files
+  - Locks
+  - Devices
+
+- **Consumable Resources**
+  - Signals
+  - Messages
+  - Interrupts
+
+> Deadlocks primarily involve **reusable resources**.
+
+---
+
+## 4. Resource Usage Model
+
+Processes typically follow this sequence:
+- **Request** a resource
+- **Use** the resource
+- **Release** the resource
+
+OS keeps track of:
+- Resource ownership
+- Resource requests
+- Waiting processes
+
+---
+
+## 5. Critical Section
+
+- A **critical section** is a part of code that:
+  - Accesses shared resources
+  - Must not be executed by more than one process/thread at a time
+
+- Critical sections require:
+  - Mutual exclusion
+  - Synchronization mechanisms
+
+> Deadlocks often arise from **multiple critical sections and improper lock ordering**.
+
+---
+
+## 8. Starvation vs Deadlock
+
+- **Starvation**
+  - Process waits indefinitely due to scheduling policy
+  - Resource may become available, but process never gets it
+
+- **Deadlock**
+  - Set of processes wait forever for resources held by each other
+  - Circular waiting
+  - No process can proceed
+
+> Deadlock ≠ Starvation
+
+---
+
+## 9. Why Deadlocks Occur
+
+Deadlocks occur because of:
+- Concurrency
+- Shared resources
+- Blocking synchronization
+- Improper resource allocation or ordering
+
+---
+
