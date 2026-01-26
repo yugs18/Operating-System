@@ -961,3 +961,220 @@ Deadlocks occur because of:
 
 ---
 
+## Deadlock
+
+- A **deadlock** is a situation in which **two or more processes are waiting indefinitely**
+  for an event that can **never occur**.
+
+### Consequences of Deadlock
+- Throughput and efficiency drop
+- Ineffective utilization of resources
+- System appears to be stuck
+- Deadlock is **undesirable**
+
+---
+
+## Necessary Conditions for Deadlock
+
+Deadlock can occur **only if all of the following conditions hold simultaneously**:
+
+1. **Mutual Exclusion**
+   - At least one resource must be held in a non-shareable mode
+   - Typically involves a critical section or shared resource
+
+2. **Hold and Wait**
+   - A process holds at least one resource
+   - While waiting to acquire additional resources
+   - **Hold and wait alone ≠ deadlock**
+   - **Deadlock = all necessary conditions together**
+
+3. **No Preemption**
+   - Resources cannot be forcibly taken from a process
+   - They must be released voluntarily
+
+4. **Circular Wait**
+   - A circular chain of processes exists
+   - Each process waits for a resource held by the next process in the chain
+
+> If **all four conditions** are present, a deadlock **may occur**.
+
+---
+
+## Deadlock Handling Strategies
+
+- **Deadlock Prevention**
+- **Deadlock Avoidance**
+- **Deadlock Detection and Recovery**
+- **Deadlock Ignorance**
+
+---
+
+## Deadlock Prevention
+
+Deadlock prevention works by **negating one or more necessary conditions**:
+
+- **Mutual Exclusion**
+  - Cannot be eliminated (some resources are inherently non-shareable)
+
+- **Hold and Wait**
+  - Prevented by enforcing:
+    - **Hold OR Wait**
+    - Process must request all resources at once
+
+- **No Preemption**
+  - Allow resource preemption
+  - Resources can be forcibly taken and reassigned
+
+- **Circular Wait**
+  - Prevented by imposing a **total ordering** on resources
+  - Processes must request resources in increasing order
+
+---
+
+## Resource Allocation Graph (RAG)
+
+- Used to represent resource allocation and requests
+
+### Single-Instance Resources
+- **Cycle is both a necessary and sufficient condition**
+  - Cycle ⇒ Deadlock
+
+### Multi-Instance Resources
+- **Cycle is only a necessary condition**
+  - Cycle ⇏ Deadlock (may or may not occur)
+
+---
+
+## Deadlock Avoidance
+
+Deadlock avoidance ensures the system **never enters an unsafe state**.
+
+### Techniques
+
+- **Single Instance Resources**
+  - Resource Allocation Graph (RAG)
+
+- **Multiple Instance Resources**
+  - **Banker’s Algorithm**
+    - Safety algorithm
+    - Resource request algorithm
+
+---
+
+## Deadlock Detection
+
+Deadlock detection allows the system to:
+- **Let deadlocks occur**
+- Periodically **check** whether a deadlock has happened
+- Take action to **recover** from it
+
+This approach is used when:
+- Deadlocks are rare
+- Prevention or avoidance is too costly
+
+---
+
+### Deadlock Detection Techniques
+
+#### 1. Single-Instance Resources
+- Use a **Resource Allocation Graph (RAG)**
+- If a **cycle exists**, then:
+  - Deadlock has occurred
+
+---
+
+#### 2. Multiple-Instance Resources
+- RAG alone is **not sufficient**
+- OS uses a **Deadlock Detection Algorithm**
+  - Similar in structure to Banker’s Algorithm
+  - Checks for processes that cannot finish with available resources
+
+> If one or more processes cannot complete → deadlock exists
+
+---
+
+## Deadlock Recovery
+
+Once a deadlock is detected, the OS must recover.
+
+---
+
+### Recovery Methods
+
+#### 1. Process Termination
+
+- **Abort all deadlocked processes**
+  - Simple
+  - Expensive
+  - Loss of work
+
+- **Abort one process at a time**
+  - Re-run detection after each termination
+  - Continue until deadlock is resolved
+
+**Process selection criteria:**
+- Priority of process
+- How long process has executed
+- Resources held by the process
+- Cost of restarting the process
+
+---
+
+#### 2. Resource Preemption
+
+- Temporarily take resources from some processes
+- Give them to other processes to break deadlock
+
+**Issues with resource preemption:**
+- Selecting a victim process
+- Rollback to a safe state
+- Preventing starvation of victim process
+
+---
+
+## Deadlock Ignorance
+
+- OS **ignores deadlocks completely**
+- Assumes deadlocks are rare
+
+### Example
+- UNIX, Linux, Windows
+
+**Reason:**
+- Deadlock handling is expensive
+- User or administrator can restart the system/process
+
+> Known as the **Ostrich Algorithm**
+
+---
+
+## Comparison of Deadlock Handling Strategies
+
+| Strategy     | Deadlock Allowed | Overhead | Used In Practice |
+|--------------|------------------|----------|------------------|
+| Prevention   | ❌ No            | High     | Rare             |
+| Avoidance    | ❌ No            | High     | Rare             |
+| Detection    | ✔ Yes           | Medium   | Limited          |
+| Ignorance    | ✔ Yes           | Low      | Common           |
+
+---
+
+## Common Deadlock Examples
+
+- Two processes holding one lock each and waiting for the other
+- Circular file locking
+- Nested mutex locking without ordering
+- Thread deadlocks in shared memory programs
+
+---
+
+## Final Note
+
+Deadlocks are a **consequence of concurrency, synchronization, and resource sharing**.
+Understanding deadlocks helps in:
+- Writing correct concurrent programs
+- Designing OS kernels
+- Avoiding system freezes and performance issues
+
+---
+
