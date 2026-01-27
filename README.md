@@ -1178,3 +1178,651 @@ Understanding deadlocks helps in:
 
 ---
 
+## Memory Management
+> Primary (Main) Memory → RAM  
+> (Registers and cache are part of the memory hierarchy but are not managed directly by the OS)
+
+---
+
+## Linear One-Dimensional View of Memory
+
+- Main memory is viewed as a **linear array of addressable locations**
+- Each location stores a **word** (or byte, depending on architecture)
+
+- If address size is **n bits**, then:
+  - Total addressable locations = `2ⁿ`
+
+```text
+10 bits → 2¹⁰ words → 1 KW (Kilo Words)
+20 bits → 2²⁰ words → 1 MW (Mega Words)
+30 bits → 2³⁰ words → 1 GW (Giga Words)
+```
+
+
+---
+
+## System Bus
+- A **bus** is a group of wires used to transfer data
+- Each wire carries **1 bit**
+- Address bus width determines maximum addressable memory
+
+---
+
+## Address Binding
+
+- **Address Binding**
+  - Association of program instructions and data with memory addresses
+- The **linker** resolves references to:
+  - External variables
+  - Functions
+  - Libraries
+
+---
+
+## Binding Time
+
+- **Binding Time**
+  - The time at which logical addresses are mapped to physical addresses
+
+### Types of Binding Time
+
+- **Compile-Time Binding (CT)**
+  - Addresses decided at compile time
+  - Program must be loaded at a fixed location
+  - Purely static
+
+- **Load-Time Binding (LT)**
+  - Compiler generates relocatable code
+  - Loader assigns physical addresses
+  - Some flexibility
+
+- **Run-Time Binding (RT)**
+  - Address binding occurs during execution
+  - Requires hardware support (MMU)
+  - Most flexible and widely used
+
+---
+
+## Types of Address Binding
+
+- **Static Binding**
+  - Address association cannot change
+  - Used in compile-time binding
+
+- **Dynamic Binding**
+  - Address association can change during execution
+  - Used in run-time binding
+
+---
+
+## Memory Management Techniques
+
+- **Contiguous Memory Allocation**
+  - Each process occupies a single continuous block of memory
+  - Simple but inefficient
+
+- **Non-Contiguous Memory Allocation**
+  - Process memory is divided and placed at different locations
+  - Efficient and scalable
+
+---
+
+## Traditional (Older) Memory Management Techniques
+
+These techniques were developed when **main memory was very limited** and hardware support
+for advanced memory management (MMU, paging) was minimal or absent.
+
+---
+
+## 1. Overlays
+
+### Concept
+- A program is divided into **logical modules**
+- Only the **required module** is loaded into memory at a time
+- Remaining modules stay on secondary storage
+
+### How it Works
+- Program is manually structured into overlays by the programmer
+- When one module finishes execution:
+  - It is replaced by another required module
+- Overlays share the **same memory region**
+
+### Why It Was Used
+- Memory was extremely limited
+- Programs were larger than available RAM
+
+### Problems
+- Programmer must manage overlays manually
+- No automatic support from OS
+- Complex program design
+- Obsolete in modern systems
+
+---
+
+## 2. Partitioning
+
+Memory is divided into **partitions**, and each partition can hold a process.
+
+---
+
+### A. Fixed Partitioning
+
+#### Concept
+- Main memory is divided into **fixed-size partitions**
+- One process occupies one partition
+- Number of processes in memory is limited by number of partitions
+
+#### Characteristics
+- Simple to implement
+- Easy process allocation and deallocation
+
+#### Problems
+- **Internal Fragmentation**
+  - Process may not use all memory of the partition
+- Limited degree of multiprogramming
+- Inefficient memory utilization
+
+---
+
+### B. Variable Partitioning
+
+#### Concept
+- Memory is divided into **variable-size partitions**
+- Each process is allocated exactly the memory it needs
+
+#### Characteristics
+- Better memory utilization than fixed partitioning
+- Flexible allocation
+
+#### Problems
+- **External Fragmentation**
+  - Free memory is split into small non-contiguous holes
+- Requires:
+  - Compaction (expensive)
+  - Relocation support
+
+---
+
+## 3. Buddy System
+
+### Concept
+- Memory is managed in blocks of size **2ⁿ**
+- When a request arrives:
+  - OS finds the smallest block large enough
+  - Larger blocks are split recursively
+
+### How it Works
+- Each block has a **buddy**
+- Two buddies can be merged if both are free
+- Merging continues until the largest possible block is formed
+
+### Advantages
+- Fast allocation and deallocation
+- Easier coalescing than variable partitioning
+
+### Problems
+- **Internal Fragmentation**
+  - Process rarely fits exactly into 2ⁿ size
+- Less flexible than paging
+
+### Usage
+- Used in kernel memory allocators
+- Example: Linux buddy allocator (for physical memory)
+
+---
+
+## Summary Comparison
+
+| Technique            | Fragmentation Type | Programmer Effort | OS Complexity | Modern Use |
+|---------------------|--------------------|-------------------|---------------|------------|
+| Overlays             | None (manual)      | High              | Low           | ❌ No |
+| Fixed Partitioning   | Internal           | Low               | Low           | ❌ No |
+| Variable Partitioning| External           | Low               | Medium        | ❌ No |
+| Buddy System         | Internal           | Low               | Medium        | ✔ Limited |
+
+---
+
+## Modern Memory Management Techniques
+
+Modern memory management techniques were developed to:
+- Improve memory utilization
+- Support multiprogramming
+- Provide memory protection
+- Allow programs larger than physical memory
+- Reduce fragmentation
+
+---
+
+## 1. Paging
+
+### Concept
+- Logical memory is divided into **fixed-size blocks called pages**
+- Physical memory is divided into **fixed-size blocks called frames**
+- Page size = Frame size
+
+### How Paging Works
+- A process is divided into pages
+- Pages are loaded into any available frames in physical memory
+- OS maintains a **page table** to map:
+  - Page number → Frame number
+
+### Address Translation in Paging
+- Logical address = (Page number, Offset)
+- Physical address = (Frame number, Offset)
+
+### Advantages
+- **Eliminates external fragmentation**
+- Efficient memory utilization
+- Supports virtual memory
+- Simplifies memory allocation
+
+### Problems
+- **Internal fragmentation** (unused space in last page)
+- Page table overhead
+- Requires hardware support (MMU)
+
+---
+
+## 2. Segmentation
+
+### Concept
+- Memory is divided into **logical segments** based on program structure
+- Each segment represents a logical unit:
+  - Code
+  - Data
+  - Stack
+  - Heap
+
+### How Segmentation Works
+- Each segment has:
+  - Base address
+  - Limit (size)
+- Logical address = (Segment number, Offset)
+- Segment table maps segment numbers to base and limit
+
+### Advantages
+- Matches programmer’s view of memory
+- Supports:
+  - Protection
+  - Sharing
+- Easy to grow or shrink segments (e.g., stack)
+
+### Problems
+- **External fragmentation**
+- Requires compaction
+- Complex memory management
+
+---
+
+## 3. Segmented Paging
+
+### Concept
+- Combines advantages of **segmentation** and **paging**
+- Segments are divided into pages
+
+### How It Works
+- Logical address consists of:
+  - Segment number
+  - Page number
+  - Offset
+- Segment table points to page tables
+- Page tables map pages to frames
+
+### Advantages
+- Logical view of segmentation
+- Efficient allocation of paging
+- Better protection and sharing
+
+### Problems
+- Increased complexity
+- More memory overhead
+- Slower address translation
+
+---
+
+## 4. Demand Paging
+
+### Concept
+- Pages are loaded into memory **only when required**
+- Not all pages of a process need to be in memory at once
+
+### How Demand Paging Works
+- If a process references a page not in memory:
+  - **Page Fault** occurs
+  - OS loads the required page from disk into memory
+
+### Advantages
+- Programs can be larger than physical memory
+- Reduced memory usage
+- Faster process startup
+
+### Problems
+- Page faults are expensive
+- Poor performance if page faults are frequent
+- Requires good page replacement algorithms
+
+---
+
+## Relation to Virtual Memory
+
+- Demand paging is the **foundation of virtual memory**
+- Virtual memory provides:
+  - Illusion of large memory
+  - Process isolation
+  - Efficient multiprogramming
+
+---
+
+## Comparison Summary
+
+| Technique         | Fragmentation Type | Flexibility | Hardware Support | Modern Use |
+|------------------|--------------------|-------------|------------------|------------|
+| Paging            | Internal           | High        | Required         | ✔ Yes |
+| Segmentation      | External           | Medium      | Required         | Limited |
+| Segmented Paging  | Internal           | Very High   | Required         | Limited |
+| Demand Paging     | Internal           | Very High   | Required         | ✔ Yes |
+
+---
+
+## Functions of Memory Manager
+
+The **Memory Manager** is a core component of the Operating System responsible for
+managing main memory efficiently and safely.
+
+Its primary functions are:
+
+---
+
+### 1. Allocation
+
+- Assigns memory space to processes when they are created
+- Decides:
+  - How much memory to allocate
+  - Where to allocate it in main memory
+
+- Allocation depends on:
+  - Memory management technique (paging, segmentation, etc.)
+  - Availability of free memory
+
+> Goal: Efficient utilization of limited main memory.
+
+---
+
+### 2. Protection
+
+- Ensures that one process **cannot access another process’s memory**
+- Prevents:
+  - Accidental data corruption
+  - Malicious memory access
+
+- Implemented using:
+  - Base and Limit registers
+  - Page-level protection bits (read/write/execute)
+  - MMU checks on every memory access
+
+> Every memory access is validated before execution.
+
+---
+
+### 3. Free Space Management
+
+- Keeps track of unused memory
+- Required to efficiently allocate memory to new processes
+
+- Techniques include:
+  - Bitmaps
+  - Free lists
+  - Buddy system
+
+> Poor free space management leads to fragmentation.
+
+---
+
+### 4. Address Translation
+
+- Converts **logical (virtual) addresses** generated by the CPU
+  into **physical addresses** in main memory
+
+- Performed by:
+  - Memory Management Unit (MMU)
+
+#### Address Translation Flow
+```text
+CPU
+|
+| Logical Address
+v
+MMU
+|
+| Physical Address
+v
+Main Memory (RAM)
+```
+
+
+> Address translation enables protection, relocation, and virtual memory.
+
+---
+
+### 5. Deallocation
+
+- Frees memory when:
+  - A process terminates
+  - A process is swapped out
+
+- Updates internal data structures:
+  - Free lists
+  - Bitmaps
+  - Page tables
+
+> Prevents memory leaks and starvation.
+
+---
+
+## Address Space
+
+An **Address Space** is the range of memory addresses that a process can use.
+
+---
+
+### Logical Address Space (Virtual Address Space)
+
+- Generated by the CPU
+- Used by programs
+- Independent of actual physical memory layout
+- Each process has its **own logical address space**
+
+> Provides isolation and security.
+
+---
+
+### Physical Address Space
+
+- Actual addresses in main memory (RAM)
+- Shared among all processes
+- Accessed only after address translation
+
+---
+
+## Logical vs Physical Address Space
+
+```text
+Process
+|
+| Logical Address Space
+v
++-------------------+
+| Virtual Memory |
++-------------------+
+|
+| Address Translation
+v
++-------------------+
+| Physical Memory |
++-------------------+
+```
+
+---
+
+## Why Address Spaces are Important
+
+- Enable:
+  - Process isolation
+  - Protection
+  - Relocation
+  - Virtual memory
+
+- Allow multiple processes to:
+  - Believe they own the entire memory
+  - Safely coexist in the system
+
+---
+
+## Design & Implementation of NCG Techniques
+### Organization of Logical Address Space (LAS), Physical Address Space (PAS) & MMU
+
+Non-Contiguous Memory Management (NCG) allows a process to be stored
+in multiple non-adjacent locations in physical memory.
+Paging is the simplest NCG technique.
+
+---
+
+## Simple Paging (Example-Based Explanation)
+
+### Given
+- Logical Address Space (LAS) = **8 KB**
+- Physical Address Space (PAS) = **4 KB**
+- Page Size (PS) = **1 KB**
+
+---
+
+### Address Size Calculation
+
+- LAS = 8 KB = 2¹³ bytes → **Logical Address = 13 bits**
+- PAS = 4 KB = 2¹² bytes → **Physical Address = 12 bits**
+
+---
+
+## Organization of Logical Address Space (LAS / Virtual Space)
+
+- LAS is divided into equal-sized units called **pages**
+- Page size = **1 KB = 2¹⁰ bytes**
+
+### Number of Pages
+- N = LAS / Page Size
+- N = 8 KB / 1 KB = 8 pages
+
+
+### Logical Address Structure
+- Page offset (d) = log₂(Page size) = **10 bits**
+- Page number (p) = log₂(Number of pages) = log₂(8) = **3 bits**
+
+### Logical Address Format
+```text
+  13-bit Logical Address
+
+    3 bits    10 bits
++---------+---------------+
+| Page No | Page Offset |
++---------+---------------+
+    p           d
+```
+
+> Logical Address = (Page Number, Offset)
+
+---
+
+## Organization of Physical Address Space (PAS)
+
+- PAS is divided into equal-sized units called **frames**
+- Frame size = Page size = **1 KB**
+
+### Number of Frames
+- M = PAS / Frame Size
+- M = 4 KB / 1 KB = 4 frames
+
+### Physical Address Structure
+- Frame offset = Page offset = **10 bits**
+- Frame number (f) = log₂(Number of frames) = log₂(4) = **2 bits**
+
+### Physical Address Format
+```text
+  12-bit Physical Address
+
+    2 bits    10 bits
++---------+---------------+
+| Frame No| Frame Offset |
++---------+---------------+
+      f          d
+```
+
+> Physical Address = (Frame Number, Offset)
+
+---
+
+## Organization of MMU (Page Table)
+
+- Each process has its **own page table**
+- Page tables are stored in **main memory**
+- Page table maps:
+  - **Page Number → Frame Number**
+
+### Page Table Characteristics
+- Number of entries = Number of pages = **8**
+- Each entry stores:
+  - Frame number
+  - Protection bits (read/write/execute)
+  - Valid/invalid bit
+
+### Page Table Size
+- Page Table Size = Number of Pages × Size of Each Entry
+- PT Size = N × E bytes
+
+---
+
+## Address Translation Using Paging
+
+### Translation Steps
+1. CPU generates logical address (p, d)
+2. Page number (p) is used to index page table
+3. Frame number (f) is obtained
+4. Physical address = (f, d)
+
+### Translation Flow Diagram
+```
+CPU
+|
+| Logical Address (p, d)
+v
+Page Table
+|
+| Frame Number (f)
+v
+MMU
+|
+| Physical Address (f, d)
+v
+RAM
+```
+
+---
+
+## Why Paging Works Well
+
+- Eliminates **external fragmentation**
+- Allows non-contiguous allocation
+- Simplifies memory allocation
+- Supports virtual memory
+
+---
+
+## Limitations of Simple Paging
+
+- Page table consumes memory
+- Every memory access may require:
+  - Page table lookup
+- Leads to performance overhead
+  - Solved using **TLB** (Translation Lookaside Buffer)
+
+---
+
