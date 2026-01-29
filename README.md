@@ -1826,3 +1826,222 @@ RAM
 
 ---
 
+## Performance of Paging
+
+Paging introduces an extra level of memory access due to address translation.
+Understanding its performance impact is critical.
+
+---
+
+## Timing Issues in Paging
+
+- The **page table is stored in main memory**
+- Let:
+  - `m` = main memory access time (nanoseconds)
+
+### Without TLB
+For every memory access:
+1. Access page table → `m`
+2. Access actual memory → `m`
+
+### Effective Memory Access Time (EMAT)
+```
+EMAT = m + m = 2m
+```
+
+---
+
+## Paging Access Flow (Without TLB)
+```
+CPU
+|
+| Virtual Address
+v
+Main Memory (Page Table) -- m -->
+|
+| Physical Address
+v
+Main Memory (Data) -- m -->
+|
+v
+Data
+```
+
+> Paging doubles memory access time → **performance degradation**
+
+---
+
+## Improving Paging Performance
+
+Goal:
+> Make **EMAT ≈ m**
+
+This is achieved using **TLB (Translation Lookaside Buffer)**.
+
+---
+
+## Translation Lookaside Buffer (TLB)
+
+- TLB is a **small, fast cache**
+- Stores **recent page table entries**
+- Located inside or very close to the MMU
+- Access time `c`, where:
+```
+c << m
+```
+
+---
+
+## Paging Access Flow (With TLB)
+```
+CPU
+|
+| Virtual Address
+v
++------------------+
+| TLB |
++------------------+
+| Hit | Miss
+v v
+Physical Addr Page Table (m)
+| |
+| v
+| Physical Addr
+| |
+v v
+Main Memory (m) Main Memory (m)
+```
+
+---
+
+## Effective Memory Access Time (With TLB)
+
+Let:
+- `h` = TLB hit ratio
+
+### EMAT Formula
+```
+EMAT = h × (c + m) + (1 − h) × (c + m + m)
+```
+
+### Interpretation
+- High hit ratio → EMAT approaches `m`
+- Low hit ratio → EMAT approaches `2m`
+
+---
+
+## Key Points about TLB
+
+- Uses **parallel search**
+- Stores:
+  - Page number
+  - Frame number
+  - Protection bits
+- On context switch:
+  - TLB entries must be flushed or tagged (ASID)
+
+---
+
+## Hashed Paging
+
+### Why Hashed Paging?
+- Large address spaces → huge page tables
+- Hashing reduces lookup time
+
+---
+
+### How Hashed Paging Works
+
+- Virtual page number is hashed
+- Hash table entry points to:
+  - Frame number
+  - Next entry (for collisions)
+
+---
+
+### Hashed Paging Diagram
+```
+Virtual Page No
+|
+v
+Hash Function
+|
+v
+Hash Table Bucket
+|
++--> (VPN, Frame) -> Next -> ...
+```
+
+---
+
+### Collision Resolution Techniques
+
+- **Chaining**
+  - Linked list of entries
+- **Probing**
+  - Check next available slot (less common in OS paging)
+
+---
+
+## Multilevel Paging (Hierarchical Paging)
+
+### Why Multilevel Paging?
+- Single-level page table is too large
+- Most processes use only a small portion of address space
+
+---
+
+### Concept
+- Page table itself is **paged**
+- Only required portions are kept in memory
+
+---
+
+### Address Structure (Two-Level Paging Example)
+```
+| Page Directory | Page Table | Offset |
+```
+
+---
+
+### Multilevel Paging Diagram
+```
+CPU
+|
+| Virtual Address
+v
+Page Directory
+|
+v
+Page Table
+|
+v
+Frame Number
+|
+v
+Main Memory
+```
+
+---
+
+### Advantages
+- Reduces memory used by page tables
+- Scales well for large virtual address spaces
+
+### Disadvantages
+- Multiple memory accesses without TLB
+- More complex address translation
+
+---
+
+## Comparison Summary
+
+| Technique        | Purpose                         | Advantage                     | Limitation                |
+|------------------|----------------------------------|-------------------------------|---------------------------|
+| Simple Paging    | Basic mapping                   | Easy to implement             | Large page tables         |
+| TLB              | Speed up translation            | EMAT ≈ m                      | Limited size              |
+| Hashed Paging    | Large address spaces            | Faster lookup                 | Collision handling        |
+| Multilevel Paging| Reduce page table size          | Memory efficient              | Extra translation steps   |
+
+---
+
