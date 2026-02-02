@@ -2045,3 +2045,216 @@ Main Memory
 
 ---
 
+## Segmentation
+
+Segmentation is a memory management technique that:
+- Preserves the **user’s logical view of memory**
+- Divides a program into **logical units** called segments
+
+Examples of segments:
+- Code
+- Data
+- Stack
+- Heap
+
+---
+
+## Why Paging Alone Is Not Enough
+
+- Paging divides memory into fixed-size pages
+- Pages do **not correspond to logical program units**
+- Hence, paging **does not preserve the user’s view of memory**
+
+Segmentation solves this by matching memory allocation to program structure.
+
+---
+
+## Organization of Segmentation
+
+- Each segment is stored **contiguously**
+- Different segments may be placed at **non-contiguous locations** in physical memory
+
+### Segment Table
+Each process has a **segment table**.
+Each entry contains:
+- **Base** → starting physical address of the segment
+- **Limit** → size of the segment
+
+---
+
+## Logical Address Format (Segmentation)
+  ```
+  Logical Address
+
+  Segment No Offset
+  +-----------+-----------+
+  |     s     |     d     |
+  +-----------+-----------+
+```
+
+
+- `s` → segment number (index into segment table)
+- `d` → offset within the segment
+
+---
+
+## Address Translation in Segmentation
+```
+CPU
+|
+| Logical Address (s, d)
+v
+Segment Table
+|
+| Base + Offset (if d < Limit)
+v
+Physical Memory
+```
+
+
+- If `d > limit` → **Segmentation Fault**
+
+---
+
+## Performance of Segmentation
+
+### Time
+- One access to segment table → `m`
+- One access to main memory → `m`
+
+Effective Memory Access Time = 2m
+
+---
+
+### Space
+- Segment table can become large
+- To reduce space overhead:
+  - **Paging is applied to the segment table**
+
+---
+
+## Segmented Paging
+
+Segmented paging combines:
+- **Segmentation** (logical view)
+- **Paging** (efficient allocation)
+
+### How It Works
+- Each segment is divided into pages
+- Segment table entry points to a **page table**
+- Pages are stored in frames
+
+---
+
+## Segmented Paging Address Format
+```
+| Segment | Page | Offset |
+```
+
+---
+
+## Fragmentation Comparison
+
+- **Paging**
+  - Internal fragmentation (last page)
+  - No external fragmentation
+
+- **Segmentation**
+  - External fragmentation
+  - No internal fragmentation
+
+- **Segmented Paging**
+  - Internal fragmentation only
+  - No external fragmentation
+
+---
+
+## Virtual Memory
+
+Virtual Memory allows execution of programs that are:
+- Larger than available physical memory
+
+It provides an **illusion of large memory** to the programmer.
+
+---
+
+## Implementation of Virtual Memory
+
+Virtual memory is implemented using **Demand Paging**.
+
+### Demand Paging
+- Pages are loaded into memory **only when required**
+- Unused pages remain on disk
+
+---
+
+## Page Fault Handling (Step-by-Step)
+
+1. Process references a page not present in memory
+2. **Page Fault** occurs
+3. Mode switches to kernel
+4. **Virtual Memory Manager (VMM)** takes control
+5. Disk manager is invoked to locate required page
+
+If free frame exists:
+Load page → Update page table → Unblock process
+Else:
+Page replacement required
+
+---
+
+## Page Replacement
+
+When no free frame is available, OS must replace a page.
+
+### Reference String
+- Sequence of page numbers accessed by a process
+- Used to evaluate page replacement algorithms
+
+---
+
+## Page Replacement Algorithms
+
+- **Optimal Replacement**
+  - Replaces page that will not be used for the longest time
+  - Best performance (theoretical)
+
+- **Least Recently Used (LRU)**
+  - Replaces page least recently accessed
+  - Good approximation of optimal
+
+- **Most Recently Used (MRU)**
+  - Replaces most recently used page
+  - Useful in special workloads
+
+- **Counting Algorithms**
+  - **LFU (Least Frequently Used)**
+  - **MFU (Most Frequently Used)**
+
+---
+
+## Reference Bits
+
+- **Reference Bit**
+  - Set when a page is accessed
+  - Used to approximate LRU
+
+- **Additional Reference Bits**
+  - Multiple bits per page
+  - Better history of page usage
+
+---
+
+## Frame Allocation Policies
+
+- **Equal Allocation**
+  - Each process gets equal frames
+
+- **Proportional Allocation**
+  - Frames allocated based on process size
+
+- **50% Rule**
+  - Working set usually occupies about half of allocated frames
+
+---
+
