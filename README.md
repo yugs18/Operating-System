@@ -2258,3 +2258,383 @@ When no free frame is available, OS must replace a page.
 
 ---
 
+## File Systems
+
+A **File System** is a method used by the Operating System to:
+- Store data persistently
+- Organize files on secondary storage
+- Control access to files
+- Manage free space efficiently
+
+---
+
+## Why File Systems Are Needed
+
+- Main memory (RAM) is volatile
+- Data must survive:
+  - Power failure
+  - Process termination
+- Secondary storage (disk) is:
+  - Non-volatile
+  - Large
+  - Slow
+
+File systems bridge the gap between:
+> User Programs ↔ OS ↔ Secondary Storage
+
+
+---
+
+## File Concept
+
+A **file** is a named collection of related information stored on disk.
+
+### File Attributes (Metadata)
+- Name
+- Type
+- Size
+- Location
+- Permissions
+- Owner
+- Timestamps
+
+---
+
+## File Operations
+
+- Create
+- Open
+- Read
+- Write
+- Seek
+- Close
+- Delete
+- Truncate
+
+---
+
+## File Types
+
+- Regular files
+- Directory files
+- Special files
+  - Character devices
+  - Block devices
+
+---
+
+## Directory Structure
+
+Directories organize files.
+
+### Directory Operations
+- Create
+- Delete
+- List
+- Rename
+- Traverse
+
+---
+
+## Directory Structures
+
+### 1. Single-Level Directory
+- One directory for all users
+- Simple
+- Name conflicts
+
+---
+
+### 2. Two-Level Directory
+- One directory per user
+- Better isolation
+- No file sharing
+
+---
+
+### 3. Tree-Structured Directory
+- Hierarchical
+- Most common
+- Supports grouping
+
+---
+
+### 4. Acyclic Graph Directory
+- Allows file sharing
+- Uses links
+- No cycles
+
+---
+
+### 5. General Graph Directory
+- Cycles allowed
+- Requires garbage collection
+- Complex
+
+---
+
+## File System Structure
+
+Typical layered structure:
+```
+User Programs
+|
+File System Interface
+|
+Logical File System
+|
+File Organization Module
+|
+Basic File System
+|
+I/O Control
+|
+Disk Hardware
+```
+
+---
+
+## File Allocation Methods
+
+### 1. Contiguous Allocation
+- File stored in consecutive blocks
+- Fast access
+- External fragmentation
+
+---
+
+### 2. Linked Allocation
+- File blocks linked via pointers
+- No external fragmentation
+- Slow random access
+
+---
+
+### 3. Indexed Allocation
+- Index block contains pointers to file blocks
+- Efficient random access
+- Index overhead
+
+---
+
+## Free Space Management
+
+- **Bit Vector**
+- **Linked List**
+- **Grouping**
+- **Counting**
+
+---
+
+## Disk Space Organization
+
+- Disk divided into blocks
+- Blocks grouped into:
+  - Cylinders
+  - Tracks
+  - Sectors
+
+---
+
+## File System Mounting
+
+- File system must be **mounted** before use
+- Mounting attaches a file system to directory tree
+
+---
+
+## Protection & Access Control
+
+### Access Rights
+- Read (r)
+- Write (w)
+- Execute (x)
+
+### Protection Mechanisms
+- Access Control Lists (ACL)
+- Owner / Group / Others (UNIX)
+
+---
+
+## Journaling File Systems
+
+- Maintain a **log (journal)** of changes
+- Helps recover from crashes
+- Examples:
+  - ext4
+  - NTFS
+
+---
+
+## Virtual File System (VFS)
+
+- Abstraction layer
+- Allows multiple file systems to coexist
+- Provides uniform interface
+
+```
+User
+|
+VFS
+|----- ext4
+|----- FAT
+|----- NTFS
+```
+
+---
+
+## File System Performance
+
+- Disk scheduling
+- Buffer cache
+- Read-ahead
+- Write-behind
+
+---
+
+## Disk Structure and Disk I/O
+
+Secondary storage (disk) is the backbone of file systems.
+Understanding its physical and logical structure is essential
+for performance and file allocation strategies.
+
+---
+
+## Physical Structure of Disk
+
+A disk consists of one or more **platters** mounted on a spindle.
+
+### Disk → Platters → Surfaces → Tracks → Sectors
+
+```
+Disk
+└── Platter (rotating disk)
+├── Surface (top)
+│ ├── Track (concentric circle)
+│ │ ├── Sector (smallest unit)
+│ │ ├── Sector
+│ │ └── Sector
+│ └── Track
+└── Surface (bottom)
+```
+
+---
+
+### Platters
+- Circular disks coated with magnetic material
+- All platters rotate together at constant speed (RPM)
+
+### Surfaces
+- Each platter has **two surfaces**:
+  - Top surface
+  - Bottom surface
+- Each surface has its own read/write head
+
+---
+
+### Tracks
+- Concentric circular rings on each surface
+- Tracks at the same position across all platters form a **cylinder**
+
+Cylinder = Track 0 on all surfaces
+
+---
+
+### Sectors
+- Tracks are divided into **sectors**
+- Smallest physical storage unit on disk
+- Typical size:
+  - 512 bytes (older)
+  - 4 KB (modern disks)
+
+---
+
+## Disk Addressing
+
+A disk block can be identified using:
+(Cylinder, Surface, Sector)
+
+
+Modern systems abstract this using **Logical Block Addressing (LBA)**.
+
+---
+
+## Logical Structure of Disk
+
+Operating systems do **not** work directly with tracks and sectors.
+
+Instead, disks are viewed as a **linear array of logical blocks**.
+
+Logical View (used by OS):
+
+Block 0 | Block 1 | Block 2 | ... | Block N
+
+- Each block maps internally to a physical sector
+- Simplifies file system design
+
+---
+
+## Disk I/O Time
+
+Disk access time is much slower than memory access.
+It consists of multiple components.
+
+### 1. Seek Time
+- Time taken to move disk arm to the required track
+- Dominant factor
+- Depends on distance moved
+
+---
+
+### 2. Rotational Latency
+- Time waiting for desired sector to rotate under the head
+- Average rotational latency:
+= (1 / 2) × Rotation Time
+
+---
+
+### 3. Transfer Time
+- Time taken to actually read/write data
+- Depends on:
+  - Sector size
+  - Disk speed
+
+---
+
+### Total Disk Access Time
+
+Disk I/O Time =
+Seek Time
+
+Rotational Latency
+
+Transfer Time
+---
+
+## Disk I/O Flow Diagram
+```
+Request
+|
+v
+Seek to Track
+|
+v
+Wait for Sector (Rotation)
+|
+v
+Transfer Data
+```
+
+---
+
+## Why Disk I/O Is Expensive
+
+| Operation | Typical Time |
+|---------|--------------|
+| CPU register | < 1 ns |
+| RAM access | ~100 ns |
+| Disk access | ~10 ms |
+
+Disk access is **orders of magnitude slower** than memory.
+
+---
